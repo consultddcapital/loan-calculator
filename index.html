@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>เครื่องมือคำนวณสินเชื่อ - BOT Style</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="background-wrapper">
+        <div class="calculator-card">
+            <div class="card-header">
+                <h2>เครื่องมือคำนวณสินเชื่อ</h2>
+                <p>เปรียบเทียบภาระหนี้ที่เพิ่มขึ้นในแต่ละวงเงินกู้</p>
+            </div>
+
+            <div class="card-body">
+                <!-- ส่วนสำหรับคำนวณหลัก -->
+                <div class="form-section primary-calc">
+                    <div class="form-group">
+                        <label for="loanPurpose">เป้าหมายการกู้</label>
+                        <select id="loanPurpose">
+                            <option value="">กรุณาเลือก</option>
+                            <option value="housing">ที่อยู่อาศัย</option>
+                            <option value="personal">ส่วนบุคคล</option>
+                            <option value="car">รถยนต์</option>
+                            <option value="education">การศึกษา</option>
+                            <option value="other">อื่นๆ</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="loanYears">จำนวนปีของการกู้ยืม</label>
+                        <input type="number" id="loanYears" value="0" min="1" max="50" placeholder="เช่น 30">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="loanAmount">จำนวนเงินที่ต้องการกู้ (บาท)</label>
+                        <input type="number" id="loanAmount" value="0" min="1000" step="10000" placeholder="เช่น 2,000,000">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="interestRate">อัตราดอกเบี้ยเงินกู้ต่อปี (%)</label>
+                        <input type="number" id="interestRate" value="0" min="0.01" step="0.01" placeholder="เช่น 6.5">
+                    </div>
+
+                    <button class="calculate-button primary" onclick="calculateLoanDetails()">คำนวณ</button>
+
+                    <div id="primaryResult" class="result-display" style="display: none;">
+                        <p>ค่างวดต่อเดือน: <span id="monthlyPaymentValue">0.00</span> บาท</p>
+                        <p>ดอกเบี้ยรวมตลอดสัญญา: <span id="totalInterestValue">0.00</span> บาท</p>
+                        <p>รวมเงินที่ต้องชำระ: <span id="totalPaymentValue">0.00</span> บาท</p>
+                    </div>
+                </div>
+
+                <div class="divider"></div>
+
+                <!-- ส่วนสำหรับการปรับจำนวนเงินกู้ -->
+                <div class="form-section secondary-calc">
+                    <p class="section-title">ทดลองปรับจำนวนเงินที่ต้องการกู้</p>
+                    <div class="form-group">
+                        <label for="adjustedLoanAmount">จำนวนเงินที่ต้องการกู้ (บาท)</label>
+                        <input type="number" id="adjustedLoanAmount" value="0" min="0" step="10000" placeholder="เช่น 2,000,000">
+                    </div>
+                    <button class="calculate-button secondary" onclick="calculateAdjustedLoan()">คำนวณเพิ่มเติม</button>
+
+                    <div id="adjustedResult" class="result-display" style="display: none;">
+                        <p>ค่างวดต่อเดือน (ปรับ): <span id="adjustedMonthlyPaymentValue">0.00</span> บาท</p>
+                        <p>ดอกเบี้ยรวม (ปรับ): <span id="adjustedTotalInterestValue">0.00</span> บาท</p>
+                        <p>รวมที่ต้องชำระ (ปรับ): <span id="adjustedTotalPaymentValue">0.00</span> บาท</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
