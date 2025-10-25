@@ -1,221 +1,415 @@
+:root {
+    --primary-blue: #007bff; /* สีน้ำเงินหลัก */
+    --dark-blue: #0056b3; /* สีน้ำเงินเข้ม */
+    --body-bg: #b0b0b0; /* พื้นหลัง body ใหม่: เทาเข้มขึ้น */
+    --section-bg: #b0b0b5; /* พื้นหลังของแต่ละ Section เป็นสีเทาอ่อน */
+    --card-bg-light: #f9fcff; /* พื้นหลังของการ์ดใน input section */
+    --card-bg-output: #ffffff; /* พื้นหลังการ์ดในส่วนผลลัพธ์เป็นสีขาว */
+    --text-color-dark: #333; /* สีตัวอักษรสำหรับพื้นหลังอ่อน */
+    --border-color-light: #e0e0e0; /* สีขอบอ่อน */
+    --input-border-color: #cccccc; /* ขอบ input */
+    --button-reset-bg: #777;
+    --button-reset-hover: #555;
+    --button-calculate-bg: var(--primary-blue);
+    --button-calculate-hover: var(--dark-blue);
+    --info-icon-color: var(--primary-blue);
+    --slider-track-bg: #d0d0d0; /* สี slider track */
+    --slider-thumb-bg: var(--primary-blue);
+    --focus-shadow-color: rgba(0, 123, 255, 0.2); /* สีเงาเมื่อโฟกัสและสำหรับ card shadow */
+}
 body {
-    font-family: 'Sarabun', sans-serif;
+    font-family: 'IBM Plex Sans Thai', sans-serif;
+    background-color: var(--body-bg); /* ใช้สีพื้นหลัง body ใหม่ */
     margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    background-color: #f0f4f7; /* สีพื้นหลังหลัก */
-}
-
-.background-wrapper {
-    background-color: #007bff; /* สีฟ้าสดใสคล้าย BOT */
-    min-height: 100vh;
+    padding: 20px;
     display: flex;
-    justify-content: center;
+    flex-direction: column; 
+    justify-content: flex-start;
     align-items: center;
-    padding: 40px 20px;
+    min-height: 100vh;
+    color: var(--text-color-dark);
 }
 
-.calculator-card {
-    background-color: #ffffff;
+/* Styling for the main header */
+.main-header-container {
+    background-color: var(--section-bg); /* เปลี่ยนเป็นสีเทาอ่อน */
+    border: 2px solid var(--primary-blue); 
     border-radius: 12px;
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
-    width: 100%;
-    max-width: 500px;
-    overflow: hidden;
-}
-
-.card-header {
-    background-color: #e6f0ff; /* สีฟ้าอ่อนสำหรับ Header */
-    padding: 30px;
+    box-shadow: 0 6px 20px var(--focus-shadow-color); /* ใช้ focus-shadow-color */
+    padding: 20px 30px;
+    margin-bottom: 30px; 
     text-align: center;
-    color: #004d9c; /* สีน้ำเงินเข้ม */
+    max-width: 800px; 
+    width: 100%;
 }
 
-.card-header h2 {
-    margin: 0;
-    font-size: 1.8em;
-    font-weight: 600;
+.main-header-title {
+    color: var(--primary-blue);
+    font-size: 2.2em;
+    font-weight: 700;
+    margin: 0; 
 }
 
-.card-header p {
-    margin-top: 5px;
-    font-size: 0.9em;
-    color: #555;
+.container {
+    display: flex;
+    background-color: transparent; /* ทำให้ container ไม่มีพื้นหลัง */
+    border-radius: 12px;
+    /* border และ box-shadow จะถูกย้ายไปที่ section-box */
+    overflow: hidden;
+    max-width: 1200px;
+    width: 100%;
+    gap: 20px; /* เพิ่มระยะห่างระหว่าง section */
 }
 
-.card-body {
-    padding: 30px;
+/* New: Styling for the main sections (input and output) */
+.section-box {
+    background-color: var(--section-bg); /* พื้นหลังสีเทาอ่อนสำหรับแต่ละส่วน */
+    border: 1px solid var(--border-color-light); /* กรอบอ่อน */
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08); /* เงาอ่อนๆ */
+    padding: 40px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
 }
 
-.form-section {
+.input-section {
+    /* ไม่ต้องมี border-right แล้วเพราะ section-box มี border เอง */
+}
+.output-section {
+    /* ไม่ต้องมี background-color แล้วเพราะ section-box มี background เอง */
+    justify-content: center;
+}
+
+h2 {
+    color: var(--primary-blue);
     margin-bottom: 30px;
+    font-size: 1.8em;
+    font-weight: 700;
 }
 
-.form-group {
-    margin-bottom: 20px;
-    text-align: left;
+/* New: Styling for individual input cards */
+.input-card {
+    background-color: var(--card-bg-light); /* พื้นหลังการ์ดสีเทาอ่อน */
+    border: 1px solid var(--primary-blue); /* กรอบสีน้ำเงิน */
+    border-radius: 10px;
+    box-shadow: 0 4px 12px var(--focus-shadow-color); /* เงาสีฟ้า */
+    padding: 20px 25px;
+    margin-bottom: 25px; /* ระยะห่างระหว่าง card */
+    width: 100%; /* ให้ card เต็มความกว้างของ section */
+    box-sizing: border-box; /* ให้ padding ไม่เพิ่มขนาด */
+    display: flex; /* จัด input-group และ slider-group ให้อยู่ด้วยกัน */
+    flex-direction: column;
 }
 
-.form-group label {
-    display: block;
-    margin-bottom: 8px;
-    font-weight: 500;
-    color: #555;
-    font-size: 0.95em;
+.input-group {
+    margin-bottom: 15px; /* ลด margin-bottom เพื่อให้กระชับขึ้น */
+    display: flex;
+    align-items: center;
+    position: relative;
+    width: 100%; /* ให้ input-group เต็มความกว้างของ card */
 }
-
-.form-group input[type="number"],
-.form-group select {
-    width: 100%;
-    padding: 12px 15px;
-    border: 1px solid #ced4da;
-    border-radius: 6px;
-    font-size: 1.1em;
-    box-sizing: border-box;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
-    color: #007bff; /* สีตัวเลขหลัก */
-    font-weight: 600;
-}
-
-.form-group input[type="number"]::placeholder,
-.form-group select::placeholder {
-    color: #a0a0a0;
-    font-weight: 400;
-}
-
-.form-group input[type="number"]:focus,
-.form-group select:focus {
-    border-color: #007bff;
-    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
-    outline: none;
-}
-
-.form-group select {
-    appearance: none; /* ลบสไตล์เริ่มต้นของ select */
-    background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23007bff%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13%205.4L146.2%20227.3%2018.8%2074.8c-1.8-1.8-4.1-2.7-6.5-2.7S9.1%2073%207.3%2074.8c-3.6%203.6-3.6%209.4%200%2013l130.6%20130.6c2.8%202.8%206.7%204.4%2010.7%204.4s7.9-1.6%2010.7-4.4L287%2087.4c3.6-3.6%203.6-9.4%200-13z%22%2F%3E%3C%2Fsvg%3E');
-    background-repeat: no-repeat;
-    background-position: right 15px center;
-    background-size: 10px;
-    padding-right: 40px; /* เพิ่มพื้นที่สำหรับไอคอน */
-}
-
-.calculate-button {
-    width: 100%;
-    padding: 15px 20px;
-    border: none;
-    border-radius: 6px;
-    font-size: 1.15em;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background-color 0.3s ease, box-shadow 0.3s ease;
-    margin-top: 10px;
-}
-
-.calculate-button.primary {
-    background-color: #007bff;
-    color: white;
-}
-
-.calculate-button.primary:hover {
-    background-color: #0056b3;
-    box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
-}
-
-.calculate-button.secondary {
-    background-color: #28a745; /* สีเขียวสำหรับปุ่มรอง */
-    color: white;
-}
-
-.calculate-button.secondary:hover {
-    background-color: #218838;
-    box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
-}
-
-.divider {
-    border-top: 1px dashed #e0e0e0;
-    margin: 40px 0;
-}
-
-.section-title {
-    font-weight: 600;
-    color: #333;
-    font-size: 1.1em;
-    margin-bottom: 20px;
-    text-align: left;
-}
-
-.result-display {
-    background-color: #f8f9fa;
-    border-left: 5px solid #007bff; /* แถบสีด้านซ้าย */
-    padding: 15px 20px;
-    margin-top: 25px;
-    border-radius: 8px;
-    text-align: left;
-    color: #333;
-    line-height: 1.6;
-}
-
-.result-display p {
-    margin: 5px 0;
-    font-size: 0.95em;
-}
-
-.result-display span {
-    font-weight: 600;
-    color: #007bff;
+.input-group label {
+    flex: 2;
+    color: var(--text-color-dark);
     font-size: 1.05em;
+    font-weight: 500;
+    text-align: left; /* จัดชิดซ้าย */
+}
+.input-group input[type="number"] {
+    flex: 1.5;
+    padding: 10px 15px; /* ปรับ padding */
+    border: 1px solid var(--input-border-color); /* ใช้ border สีอ่อน */
+    border-radius: 8px;
+    font-size: 1.1em;
+    text-align: right;
+    outline: none;
+    transition: border-color 0.3s, box-shadow 0.3s;
+    background-color: #ffffff; /* พื้นหลัง input เป็นสีขาว */
+    color: var(--text-color-dark);
+    /* เพิ่มโค้ดใหม่ของคุณตรงนี้ */
+    padding-left: 45px; /* เพิ่ม padding-left ให้ input */
+}
+.input-group input[type="number"]:focus {
+    border-color: var(--primary-blue);
+    box-shadow: 0 0 0 3px var(--focus-shadow-color); 
+}
+.input-group .unit {
+    position: absolute;
+    right: 15px;
+    color: #888;
+    font-size: 0.9em;
+}
+.input-group .info-icon {
+    margin-left: 8px;
+    color: var(--info-icon-color);
+    cursor: help;
+    font-size: 1.1em;
 }
 
-/* Responsive adjustments */
-@media (max-width: 600px) {
-    .background-wrapper {
-        padding: 20px;
-    }
+/* เพิ่ม CSS สำหรับสัญลักษณ์ "฿" */
+.input-with-icon {
+    position: relative; /* สำคัญ: ทำให้ child elements ที่เป็น absolute อ้างอิงจากตำแหน่งนี้ */
+    flex: 1.5; /* ให้กินพื้นที่เท่าเดิม */
+    display: flex; /* จัดการการจัดวางภายใน */
+    align-items: center; /* จัดให้ไอคอนอยู่ตรงกลางแนวตั้ง */
+}
 
-    .calculator-card {
-        border-radius: 8px;
-    }
+.input-with-icon .currency-thb {
+    position: absolute;
+    left: 15px; /* ปรับตำแหน่งตามต้องการ */
+    color: #888; /* สีเดียวกับ icon เดิม */
+    font-size: 1.2em; /* ขนาดเดียวกับ icon เดิม */
+    font-weight: 600; /* ทำให้หนาขึ้นเล็กน้อย */
+    pointer-events: none; /* ทำให้คลิกผ่านได้ ไม่รบกวน input */
+    z-index: 1; /* ให้ไอคอนอยู่ด้านบน input */
+}
 
-    .card-header {
-        padding: 20px;
-    }
+.input-group input[type="number"] {
+    flex: 1; /* ให้ input เต็มพื้นที่ใน input-with-icon */
+    padding: 10px 15px;
+    border: 1px solid var(--input-border-color);
+    border-radius: 8px;
+    font-size: 1.1em;
+    text-align: right;
+    outline: none;
+    transition: border-color 0.3s, box-shadow 0.3s;
+    background-color: #ffffff;
+    color: var(--text-color-dark);
+    padding-left: 45px; /* เพิ่ม padding-left ให้ input เพื่อให้สัญลักษณ์ ฿ มีพื้นที่ */
+    width: 100%; /* ให้ input ใช้ความกว้างเต็มของ .input-with-icon */
+    box-sizing: border-box; /* สำคัญ: เพื่อให้ padding ไม่ดันความกว้างออกไป */
+}
+.slider-group {
+    margin-top: 5px; /* ลด margin-top */
+    margin-bottom: 0px; /* ลบ margin-bottom ออกเพราะ card มี margin-bottom อยู่แล้ว */
+    display: flex;
+    align-items: center;
+    width: 100%; /* ให้ slider เต็มความกว้างของ card */
+}
+.slider-group input[type="range"] {
+    flex: 1;
+    width: 100%;
+    -webkit-appearance: none;
+    height: 6px;
+    background: var(--slider-track-bg);
+    border-radius: 5px;
+    outline: none;
+    opacity: 0.8;
+    transition: opacity .2s;
+}
+.slider-group input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--slider-thumb-bg);
+    cursor: pointer;
+    box-shadow: 0 0 8px var(--focus-shadow-color);
+}
+.slider-group input[type="range"]::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--slider-thumb-bg);
+    cursor: pointer;
+    box-shadow: 0 0 8px var(--focus-shadow-color);
+}
 
-    .card-header h2 {
+.buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 40px;
+    width: 100%; /* ให้ปุ่มเต็มความกว้าง */
+}
+.buttons button {
+    padding: 15px 30px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1em;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s, transform 0.2s;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    flex: 1; /* ให้ปุ่มแบ่งพื้นที่เท่ากัน */
+    margin: 0 10px; /* เพิ่มระยะห่างระหว่างปุ่ม */
+}
+.buttons .reset-btn {
+    background-color: var(--button-reset-bg);
+    color: #fff;
+}
+.buttons .reset-btn:hover {
+    background-color: var(--button-reset-hover);
+    transform: translateY(-2px);
+}
+.buttons .calculate-btn {
+    background-color: var(--button-calculate-bg);
+    color: #fff;
+}
+.buttons .calculate-btn:hover {
+    background-color: var(--button-calculate-hover);
+    transform: translateY(-2px);
+}
+
+/* Output Section Styling */
+.output-section h2 {
+    color: var(--primary-blue);
+}
+.result-box {
+    background-color: var(--card-bg-output); /* พื้นหลังเป็นสีขาว */
+    border-radius: 12px;
+    padding: 30px;
+    margin-bottom: 25px;
+    width: 90%; /* ขยายความกว้างเล็กน้อย */
+    border: 1px solid var(--primary-blue); 
+    box-shadow: 0 4px 15px var(--focus-shadow-color); /* เงาสีน้ำเงินอ่อน */
+    color: var(--text-color-dark); /* ใช้สีเข้ม */
+}
+.result-box .title {
+    font-size: 1.2em;
+    color: var(--text-color-dark); 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 10px;
+    font-weight: 500;
+}
+.result-box .title svg {
+    margin-right: 10px;
+    color: var(--primary-blue);
+}
+.result-box .value {
+    font-size: 3em;
+    font-weight: 700;
+    color: var(--primary-blue);
+    margin-top: 5px;
+}
+.result-box .sub-value {
+    font-size: 1.1em;
+    color: var(--text-color-dark); 
+    margin-top: 5px;
+}
+.summary-cards {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+    margin-top: 20px;
+    flex-wrap: wrap; /* เพื่อให้การ์ดลงบรรทัดใหม่เมื่อหน้าจอเล็ก */
+    gap: 20px; /* เพิ่มระยะห่างระหว่างการ์ด */
+}
+.summary-card {
+    background-color: var(--card-bg-output); /* พื้นหลังการ์ดเป็นสีขาว */
+    border-radius: 12px;
+    padding: 25px 20px;
+    flex: 1; /* ให้ยืดหยุ่น */
+    min-width: 250px; /* กำหนดความกว้างขั้นต่ำ */
+    max-width: 48%; /* จำกัดความกว้างเพื่อให้อยู่ 2 คอลัมน์ */
+    /* margin: 0 10px; ถูกลบเพราะใช้ gap แทน */
+    text-align: center;
+    border: 1px solid var(--border-color-light); /* กรอบสีอ่อน */
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1); /* เงาอ่อนลง */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 180px;
+    color: var(--text-color-dark); 
+}
+.summary-card .value {
+    font-size: 2.2em;
+    font-weight: 700;
+    color: var(--primary-blue);
+    margin-bottom: 10px;
+}
+.summary-card .label {
+    font-size: 1em;
+    color: var(--text-color-dark); 
+    font-weight: 500;
+}
+.disclaimer {
+    font-size: 0.85em;
+    color: #888; 
+    margin-top: 40px;
+    line-height: 1.6;
+    text-align: left;
+    padding: 0 10px; /* ลด padding เพื่อให้เข้ากับ card */
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Responsive Design */
+@media (max-width: 992px) {
+    .main-header-container {
+        padding: 15px 20px;
+        margin-bottom: 20px;
+    }
+    .main-header-title {
+        font-size: 1.8em;
+    }
+    .container {
+        flex-direction: column;
+        gap: 15px; /* ลด gap */
+    }
+    .section-box {
+        padding: 30px;
+    }
+    .summary-cards {
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+    }
+    .summary-card {
+        width: 100%; /* ให้การ์ดเต็มความกว้าง */
+        max-width: none;
+    }
+    .buttons button {
+        margin: 0 5px; /* ลดระยะห่างปุ่ม */
+    }
+}
+@media (max-width: 768px) {
+    body {
+        padding: 15px;
+    }
+    .main-header-container {
+        padding: 10px 15px;
+        margin-bottom: 15px;
+    }
+    .main-header-title {
+        font-size: 1.4em;
+    }
+    .section-box {
+        padding: 25px;
+    }
+    h2 {
         font-size: 1.5em;
+        margin-bottom: 20px;
     }
-
-    .card-body {
-        padding: 20px;
+    .input-group label {
+        font-size: 0.95em;
+        flex: 1;
     }
-
-    .form-group label {
-        font-size: 0.9em;
-    }
-
-    .form-group input[type="number"],
-    .form-group select {
+    .input-group input[type="number"] {
+        flex: 1.2;
         padding: 10px 12px;
         font-size: 1em;
     }
-
-    .calculate-button {
-        padding: 12px 15px;
-        font-size: 1.05em;
-    }
-
-    .section-title {
+    .buttons button {
+        padding: 12px 20px;
         font-size: 1em;
     }
-
-    .result-display {
-        padding: 12px 15px;
+    .result-box .value {
+        font-size: 2.5em;
     }
-
-    .result-display p {
+    .summary-card .value {
+        font-size: 1.8em;
+    }
+    .summary-card .label {
         font-size: 0.9em;
     }
-
-    .result-display span {
-        font-size: 1em;
+    .disclaimer {
+        font-size: 0.8em;
+        padding: 0 0px; /* ลบ padding ออก */
     }
 }
