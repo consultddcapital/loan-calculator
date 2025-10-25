@@ -339,6 +339,47 @@ h2 {
     box-sizing: border-box;
 }
 
+/* Back to Top Button */
+.back-to-top {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background-color: var(--primary-blue);
+    color: #fff;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column; /* จัดให้ไอคอนและข้อความอยู่แนวตั้ง */
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8em;
+    font-weight: 600;
+    text-decoration: none;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s, transform 0.3s, opacity 0.3s;
+    opacity: 0; /* ซ่อนไว้ตอนแรก */
+    visibility: hidden; /* ซ่อนด้วย visibility เพื่อไม่ให้ถูก focus */
+    z-index: 1000;
+}
+
+.back-to-top svg {
+    width: 20px;
+    height: 20px;
+    margin-bottom: 2px; /* ระยะห่างระหว่างไอคอนกับข้อความ */
+}
+
+.back-to-top:hover {
+    background-color: var(--dark-blue);
+    transform: translateY(-5px);
+}
+
+.back-to-top.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+
 /* Responsive Design */
 @media (max-width: 992px) {
     .main-header-container {
@@ -411,5 +452,15 @@ h2 {
     .disclaimer {
         font-size: 0.8em;
         padding: 0 0px; /* ลบ padding ออก */
+    }
+    .back-to-top {
+        width: 45px;
+        height: 45px;
+        bottom: 20px;
+        right: 20px;
+    }
+    .back-to-top svg {
+        width: 18px;
+        height: 18px;
     }
 }

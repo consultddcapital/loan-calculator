@@ -19,15 +19,14 @@
             <h2>ข้อมูลส่วนตัว</h2>
             <div class="input-card">
                 <div class="input-group">
-                    <label for="monthlyIncome">รายได้หลังหักภาษี หรือระบุยอดผ่อนชำระต่อเดือน (บาท)</label>
+                    <label for="monthlyIncome">รายได้หลังหักภาษี หรือระบุยอดที่ต้องการผ่อนชำระต่อเดือน (บาท)</label>
                     <div class="input-with-icon">
-                        <span class="currency-thb">฿</span> <!-- ย้ายมาที่นี่ -->
-                        <input type="number" id="monthlyIncome" value="0" min="0">
+                        <span class="currency-thb">฿</span>
+                        <input type="number" id="monthlyIncome" value="50000" min="0">
                     </div>
-                    <span class="unit"></span>
                 </div>
                 <div class="slider-group">
-                    <input type="range" id="monthlyIncomeSlider" min="0" max="1000000" value="0">
+                    <input type="range" id="monthlyIncomeSlider" min="0" max="1000000" value="50000">
                 </div>
             </div>
 
@@ -35,33 +34,32 @@
                 <div class="input-group">
                     <label for="debt">ภาระหนี้ต่อเดือน (บาท) <span class="info-icon" title="ภาระหนี้ปัจจุบันที่คุณต้องผ่อนชำระต่อเดือน เช่น บัตรเครดิต, สินเชื่อส่วนบุคคล, ผ่อนรถ">?</span></label>
                     <div class="input-with-icon">
-                        <span class="currency-thb">฿</span> <!-- ย้ายมาที่นี่ -->
-                        <input type="number" id="debt" value="0" min="0">
+                        <span class="currency-thb">฿</span>
+                        <input type="number" id="debt" value="10000" min="0">
                     </div>
-                    <span class="unit"></span>
                 </div>
                 <div class="slider-group">
-                    <input type="range" id="debtSlider" min="0" max="500000" value="0">
+                    <input type="range" id="debtSlider" min="0" max="500000" value="10000">
                 </div>
-            </div>            <div class="input-card">
+            </div>            
+            <div class="input-card">
                 <div class="input-group">
                     <label for="age">อายุ (ปี)</label>
-                    <input type="number" id="age" value="0" min="0">
-                    <span class="unit"></span>
+                    <input type="number" id="age" value="45" min="1">
                 </div>
                 <div class="slider-group">
-                    <input type="range" id="ageSlider" min="0" max="100" value="0">
+                    <input type="range" id="ageSlider" min="1" max="100" value="45">
                 </div>
             </div>
 
             <div class="input-card">
                 <div class="input-group">
                     <label for="interestRate">% อัตราดอกเบี้ยเฉลี่ย 3 ปี <span class="info-icon" title="อัตราดอกเบี้ยโดยประมาณสำหรับ 3 ปีแรกของการกู้">?</span></label>
-                    <input type="number" id="interestRate" value="0.00" step="0.01" min="0" max="20">
+                    <input type="number" id="interestRate" value="4.50" step="0.01" min="0" max="20">
                     <span class="unit">%</span>
                 </div>
                 <div class="slider-group">
-                    <input type="range" id="interestRateSlider" min="0" max="20" step="0.01" value="0.00">
+                    <input type="range" id="interestRateSlider" min="0" max="20" step="0.01" value="4.50">
                 </div>
             </div>
 
@@ -92,7 +90,7 @@
                     ราคาสูงสุด 
                 </div>
                 <div class="value" id="maxLoanPrice">0</div>
-                <div class="sub-value">เงินดาวน์ <span id="downPayment">0</span> บาท</div>
+                <div class="sub-value">เงินดาวน์ <span id="downPayment">0 บาท</span></div>
             </div>
 
             <div class="summary-cards">

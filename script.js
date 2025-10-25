@@ -1,12 +1,9 @@
-code
-JavaScript
 // โค้ด JavaScript
 const inputs = [
-    { id: 'monthlyIncome', sliderId: 'monthlyIncomeSlider', max: 1000000 },
-    { id: 'debt', sliderId: 'debtSlider', max: 500000 },
-    { id: 'age', sliderId: 'ageSlider', max: 100 },
-    // แก้ไข: เพิ่ม step และปรับ max สำหรับ interestRate
-    { id: 'interestRate', sliderId: 'interestRateSlider', max: 20, step: 0.01 }, 
+    { id: 'monthlyIncome', sliderId: 'monthlyIncomeSlider', max: 1000000, min: 0 },
+    { id: 'debt', sliderId: 'debtSlider', max: 500000, min: 0 },
+    { id: 'age', sliderId: 'ageSlider', max: 100, min: 1 }, 
+    { id: 'interestRate', sliderId: 'interestRateSlider', max: 20, step: 0.01, min: 0 }, 
     { id: 'loanTermYears', sliderId: 'loanTermYearsSlider', min: 1, max: 30 }
 ];
 
@@ -14,68 +11,64 @@ inputs.forEach(item => {
     const input = document.getElementById(item.id);
     const slider = document.getElementById(item.sliderId);
 
-    // กำหนดค่า min, max, step ให้กับ slider
-    slider.min = item.min !== undefined ? item.min : 0; // ใช้ค่า min จาก item หรือ 0
+    slider.min = item.min !== undefined ? item.min : 0;
     slider.max = item.max;
     if (item.step) slider.step = item.step;
+    
+    // ตั้งค่าเริ่มต้นของ slider ตาม input field (เผื่อกรณีมีการโหลดค่าเริ่มต้นจาก HTML)
+    slider.value = parseFloat(input.value) || item.min;
 
-    // เมื่อ input type="number" เปลี่ยนค่า
     input.addEventListener('input', () => {
         let inputValue = parseFloat(input.value);
-        if (isNaN(inputValue) || inputValue < slider.min) { // ตรวจสอบกับ slider.min ด้วย
-            inputValue = slider.min;
+        if (isNaN(inputValue)) {
+            inputValue = item.min;
         }
-        if (inputValue > item.max) {
-            inputValue = item.max;
-        }
-        // แก้ไข: สำหรับ interestRate ให้ปัดเศษทศนิยม 2 ตำแหน่ง
+
+        inputValue = Math.max(item.min, Math.min(inputValue, item.max));
+
         if (item.id === 'interestRate') {
             input.value = inputValue.toFixed(2);
         } else {
             input.value = inputValue;
         }
         slider.value = inputValue;
-        // ไม่เรียก calculateLoan() ตรงนี้ เพื่อให้ต้องกดปุ่มคำนวณก่อน
+        // *** ลบ calculateLoan() ออกจากตรงนี้ ***
     });
 
-    // เมื่อ input type="range" (slider) เปลี่ยนค่า
     slider.addEventListener('input', () => {
-        // แก้ไข: สำหรับ interestRate ให้ปัดเศษทศนิยม 2 ตำแหน่ง
         if (item.id === 'interestRate') {
             input.value = parseFloat(slider.value).toFixed(2);
         } else {
             input.value = slider.value;
         }
-        // ไม่เรียก calculateLoan() ตรงนี้ เพื่อให้ต้องกดปุ่มคำนวณก่อน
+        // *** ลบ calculateLoan() ออกจากตรงนี้ ***
     });
 });
 
 document.addEventListener('DOMContentLoaded', () => {
-    // ตั้งค่าเริ่มต้นให้กับ input fields
+    // กำหนดค่าเริ่มต้นตามรูปภาพที่ให้มา
     document.getElementById('monthlyIncome').value = 0; 
     document.getElementById('debt').value = 0;
-    document.getElementById('age').value = 0;
-    // แก้ไข: ตั้งค่าเริ่มต้นเป็น '0.00' (เป็น String)
+    document.getElementById('age').value = 1; 
     document.getElementById('interestRate').value = '0.00'; 
-    document.getElementById('loanTermYears').value = 30; // ตั้งค่าเริ่มต้นระยะเวลากู้
+    document.getElementById('loanTermYears').value = 1;
 
-    // ซิงค์ค่าของ sliders ให้ตรงกับ input fields
+    // ซิงค์ค่าของ sliders ให้ตรงกับ input fields หลังจากกำหนดค่าเริ่มต้น
     inputs.forEach(item => {
-        // แก้ไข: สำหรับ interestRate ให้ใช้ parseFloat().toFixed(2) เพื่อซิงค์ค่าเริ่มต้น
-        if (item.id === 'interestRate') {
-            document.getElementById(item.sliderId).value = parseFloat(document.getElementById(item.id).value).toFixed(2);
-        } else {
-            document.getElementById(item.sliderId).value = document.getElementById(item.id).value;
+        const inputElement = document.getElementById(item.id);
+        const sliderElement = document.getElementById(item.sliderId);
+        if (inputElement && sliderElement) {
+            sliderElement.value = parseFloat(inputElement.value);
         }
     });
 
-    // แสดงผลลัพธ์เริ่มต้นเป็น 0 ทันทีที่โหลดหน้าเว็บ (ยังไม่มีการคำนวณจริง)
-    displayResults(0, 0, 0, 0); 
+    // เรียก calculateLoan() เพื่อแสดงผลลัพธ์เริ่มต้นจากการตั้งค่าเริ่มต้น (เมื่อโหลดหน้าเว็บครั้งแรก)
+    calculateLoan();
 
     // Back to Top button functionality
     const backToTopBtn = document.getElementById('backToTopBtn');
     window.addEventListener('scroll', () => {
-        if (window.scrollY > 300) { // Show button after scrolling 300px
+        if (window.scrollY > 300) { 
             backToTopBtn.classList.add('show');
         } else {
             backToTopBtn.classList.remove('show');
@@ -93,100 +86,87 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 function calculateLoan() {
-    // ดึงค่าจาก input fields
     const monthlyIncome = parseFloat(document.getElementById('monthlyIncome').value);
     const debt = parseFloat(document.getElementById('debt').value);
     const age = parseInt(document.getElementById('age').value);
-    const interestRate = parseFloat(document.getElementById('interestRate').value) / 100; // แปลงเป็นทศนิยม
-    let loanTermYears = parseInt(document.getElementById('loanTermYears').value); // ระยะเวลากู้ที่ผู้ใช้ระบุ
+    const interestRate = parseFloat(document.getElementById('interestRate').value) / 100;
+    let loanTermYears = parseInt(document.getElementById('loanTermYears').value);
 
-    // กำหนดค่า DSR (Debt Service Ratio) และ LTV (Loan-to-Value)
-    const maxDSR = 0.6; // DSR สูงสุด (60% ของรายได้)
-    const maxLTV = 0.9; // LTV สูงสุด (90% ของราคาบ้าน)
+    // ปรับ DSR และ LTV
+    const maxDSR = 0.6; // DSR สูงสุด 60%
+    // maxLTV = 1; // ยังคงสมมติ LTV 100% เพื่อให้เงินดาวน์เป็น 0
 
-    // ตรวจสอบเงื่อนไขพื้นฐานสำหรับผลลัพธ์เป็น 0
-    if (isNaN(monthlyIncome) || monthlyIncome <= 0 || 
+    // ตรวจสอบค่าที่ไม่ถูกต้องหรือเป็นศูนย์
+    if (isNaN(monthlyIncome) || monthlyIncome < 0 || 
         isNaN(debt) || debt < 0 ||
-        isNaN(age) || age <= 0 || 
+        isNaN(age) || age < 1 || 
         isNaN(interestRate) || interestRate < 0 ||
-        isNaN(loanTermYears) || loanTermYears <= 0) {
+        isNaN(loanTermYears) || loanTermYears < 1) { 
         displayResults(0, 0, 0, 0);
         return;
     }
 
-    // คำนวณรายได้ที่ธนาคารอนุญาตให้เป็นภาระหนี้สูงสุด (ตาม DSR)
-    const incomeAllowedForDebt = monthlyIncome * maxDSR;
-    
-    // คำนวณยอดผ่อนสูงสุดที่ยังเหลืออยู่หลังจากหักภาระหนี้เดิมแล้ว
-    const maxAffordableInstallment = Math.max(0, incomeAllowedForDebt - debt);
+    // 1. คำนวณรายได้หลังหักภาระหนี้
+    const remainingIncomeAfterDebt = monthlyIncome - debt;
 
-    if (maxAffordableInstallment <= 0) { // ถ้ายอดผ่อนที่เหลืออยู่เป็น 0 หรือติดลบ ก็กู้ไม่ได้
+    // 2. คำนวณยอดผ่อนรวมสูงสุดที่ธนาคารจะอนุญาตตาม DSR
+    if (remainingIncomeAfterDebt <= 0) {
         displayResults(0, 0, 0, 0);
         return;
     }
 
-    // กำหนดระยะเวลากู้สูงสุดที่แท้จริงตามอายุ
-    const maxLoanTermBasedOnAge = Math.min(30, Math.max(0, (60 - age)));
+    const maxAffordableHomeInstallment = remainingIncomeAfterDebt * maxDSR;
     
-    // ใช้ระยะเวลากู้ที่ผู้ใช้ระบุ แต่ไม่เกินกว่าที่อายุและธนาคารกำหนด (max 30 ปี)
-    const actualLoanTermYears = Math.min(loanTermYears, maxLoanTermBasedOnAge);
+    if (maxAffordableHomeInstallment <= 0) {
+        displayResults(0, 0, 0, 0);
+        return;
+    }
+
+    // 3. กำหนดระยะเวลากู้สูงสุดที่แท้จริงตามอายุและนโยบายธนาคาร
+    const maxAgeForLoan = 70; 
+    const maxLoanTermBasedOnAge = Math.max(0, (maxAgeForLoan - age)); 
+    
+    const actualLoanTermYears = Math.min(loanTermYears, maxLoanTermBasedOnAge, 30);
     const actualLoanTermMonths = actualLoanTermYears * 12;
 
-    if (actualLoanTermMonths <= 0) { // หากระยะเวลากู้ไม่สมเหตุสมผล
+    if (actualLoanTermMonths <= 0) {
         displayResults(0, 0, 0, 0);
         return;
     }
     
-    // คำนวณวงเงินกู้สูงสุด (Principal) จากยอดผ่อนสูงสุดที่สามารถจ่ายได้
-    // สูตร: P = M * [ (1 + i)^n – 1] / [ i(1 + i)^n ]
-    const monthlyInterestRate = interestRate / 12; // อัตราดอกเบี้ยต่อเดือน
-    let maxLoanPrincipal = 0;
+    // 4. คำนวณวงเงินกู้สูงสุด (Principal) จากยอดผ่อนสูงสุดที่สามารถจ่ายได้ (maxAffordableHomeInstallment)
+    const monthlyInterestRate = interestRate / 12;
+    let loanLimit = 0; 
 
     if (monthlyInterestRate > 0) {
         const term = Math.pow(1 + monthlyInterestRate, actualLoanTermMonths);
-        maxLoanPrincipal = maxAffordableInstallment * (term - 1) / (monthlyInterestRate * term);
-    } else { 
-        // กรณีดอกเบี้ยเป็น 0% (ไม่น่าจะเกิดขึ้นจริง แต่เผื่อไว้)
-        maxLoanPrincipal = maxAffordableInstallment * actualLoanTermMonths;
+        loanLimit = maxAffordableHomeInstallment * (term - 1) / (monthlyInterestRate * term);
+    } else { // กรณีดอกเบี้ย 0%
+        loanLimit = maxAffordableHomeInstallment * actualLoanTermMonths;
     }
 
-    // วงเงินที่สามารถกู้ได้ (ไม่ควรติดลบ)
-    const loanLimit = Math.max(0, maxLoanPrincipal);
+    loanLimit = Math.max(0, loanLimit); // ให้แน่ใจว่าไม่ติดลบ
 
-    // คำนวณยอดผ่อนเฉลี่ยต่อเดือนสำหรับ 3 ปีแรก (ใช้ loanLimit เป็นเงินต้น)
-    // สูตร: M = P [ i(1 + i)^n ] / [ (1 + i)^n – 1]
-    let estimatedMonthlyPayment = 0;
-    const yearsForEstimate = 3;
-    const monthsForEstimate = yearsForEstimate * 12;
+    // 5. คำนวณยอดผ่อนเฉลี่ยต่อเดือน 3 ปีแรก
+    const estimatedMonthlyPayment = maxAffordableHomeInstallment;
     
-    if (loanLimit > 0 && monthsForEstimate > 0 && monthlyInterestRate > 0) { 
-        const termEstimate = Math.pow(1 + monthlyInterestRate, monthsForEstimate);
-        estimatedMonthlyPayment = loanLimit * monthlyInterestRate * termEstimate / (termEstimate - 1);
-    } else if (loanLimit > 0 && monthsForEstimate > 0 && monthlyInterestRate === 0) {
-        estimatedMonthlyPayment = loanLimit / monthsForEstimate; // กรณีดอกเบี้ย 0%
-    } else {
-        estimatedMonthlyPayment = 0;
-    }
-    
-    // คำนวณราคาบ้านสูงสุดที่ซื้อได้จากวงเงินกู้และ LTV
-    const maxLoanPrice = loanLimit / maxLTV;
-    const downPayment = maxLoanPrice - loanLimit; // เงินดาวน์ (ไม่ควรติดลบ)
+    // 6. คำนวณราคาบ้านสูงสุดและเงินดาวน์
+    const maxLoanPrice = loanLimit; 
+    const downPayment = 0; 
 
-    // แสดงผลลัพธ์
-    displayResults(maxLoanPrice, Math.max(0, downPayment), loanLimit, estimatedMonthlyPayment);
+    displayResults(maxLoanPrice, downPayment, loanLimit, estimatedMonthlyPayment);
 }
 
 // ฟังก์ชันสำหรับแสดงผลลัพธ์บนหน้าเว็บ
 function displayResults(maxLoanPrice, downPayment, loanLimit, monthlyPayment) {
     document.getElementById('maxLoanPrice').innerText = formatCurrency(maxLoanPrice);
-    document.getElementById('downPayment').innerText = formatCurrency(downPayment);
+    document.getElementById('downPayment').innerText = formatCurrency(downPayment) + ' บาท';
     document.getElementById('loanLimit').innerText = formatCurrency(loanLimit);
     document.getElementById('monthlyPayment').innerText = formatCurrency(monthlyPayment);
 }
 
 // ฟังก์ชันสำหรับจัดรูปแบบตัวเลขให้เป็นสกุลเงิน (บาท)
 function formatCurrency(amount) {
-    // ปัดเศษให้เป็นจำนวนเต็มใกล้เคียงที่สุด
     return new Intl.NumberFormat('th-TH', { 
         style: 'decimal', 
         minimumFractionDigits: 0, 
@@ -196,17 +176,20 @@ function formatCurrency(amount) {
 
 // ฟังก์ชันสำหรับล้างข้อมูลในฟอร์ม
 function resetForm() {
+    // กำหนดค่าเริ่มต้นตามรูปภาพที่ให้มา
     document.getElementById('monthlyIncome').value = 0;
     document.getElementById('debt').value = 0;
-    document.getElementById('age').value = 0;
-    document.getElementById('interestRate').value = 0.00; // รีเซ็ตเป็น 0.00%
-    document.getElementById('loanTermYears').value = 30; // รีเซ็ตระยะเวลากู้
+    document.getElementById('age').value = 1;
+    document.getElementById('interestRate').value = '0.00';
+    document.getElementById('loanTermYears').value = 1;
 
-    // ซิงค์ค่า sliders ให้เป็นค่าเริ่มต้น
     inputs.forEach(item => {
-        document.getElementById(item.sliderId).value = document.getElementById(item.id).value;
+        const inputElement = document.getElementById(item.id);
+        const sliderElement = document.getElementById(item.sliderId);
+        if (inputElement && sliderElement) {
+            sliderElement.value = parseFloat(inputElement.value);
+        }
     });
 
-    // แสดงผลลัพธ์เป็น 0 ทันทีหลังล้างข้อมูล
-    displayResults(0, 0, 0, 0);
+    displayResults(0, 0, 0, 0); // รีเซ็ตผลลัพธ์ทันที
 }
