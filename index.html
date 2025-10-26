@@ -4,117 +4,72 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>คำนวณวงเงินกู้และค่างวด</title>
-    <!-- เรียกใช้ Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <!-- เรียกใช้ไฟล์ CSS ของเรา -->
     <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-    <div class="main-header-container">
-        <h1 class="main-header-title">คำนวณวงเงินกู้และค่างวดที่ต้องผ่อนชำระ</h1>
-    </div>
-    
     <div class="container">
-        <div class="input-section section-box">
+        <div class="card input-card">
             <h2>ข้อมูลส่วนตัว</h2>
-            <div class="input-card">
-                <div class="input-group">
-                    <label for="monthlyIncome">รายได้หลังหักภาษี หรือระบุยอดที่ต้องการผ่อนชำระต่อเดือน (บาท)</label>
-                    <div class="input-with-icon">
-                        <span class="currency-thb">฿</span>
-                        <input type="number" id="monthlyIncome" value="50000" min="0">
-                    </div>
-                </div>
-                <div class="slider-group">
-                    <input type="range" id="monthlyIncomeSlider" min="0" max="1000000" value="50000">
-                </div>
+            <div class="input-group">
+                <label for="monthlyIncome">รายได้หลังหักภาษีและภาระผ่อนชำระ (บาท)</label>
+                <input type="number" id="monthlyIncome" value="0" min="0">
+                <input type="range" id="monthlyIncomeRange" min="0" max="100000" value="0">
             </div>
-
-            <div class="input-card">
-                <div class="input-group">
-                    <label for="debt">ภาระหนี้ต่อเดือน (บาท) <span class="info-icon" title="ภาระหนี้ปัจจุบันที่คุณต้องผ่อนชำระต่อเดือน เช่น บัตรเครดิต, สินเชื่อส่วนบุคคล, ผ่อนรถ">?</span></label>
-                    <div class="input-with-icon">
-                        <span class="currency-thb">฿</span>
-                        <input type="number" id="debt" value="10000" min="0">
-                    </div>
-                </div>
-                <div class="slider-group">
-                    <input type="range" id="debtSlider" min="0" max="500000" value="10000">
-                </div>
-            </div>            
-            <div class="input-card">
-                <div class="input-group">
-                    <label for="age">อายุ (ปี)</label>
-                    <input type="number" id="age" value="45" min="1">
-                </div>
-                <div class="slider-group">
-                    <input type="range" id="ageSlider" min="1" max="100" value="45">
-                </div>
+            <div class="input-group">
+                <label for="monthlyDebt">ภาระหนี้ต่อเดือน (บาท)</label>
+                <input type="number" id="monthlyDebt" value="0" min="0">
+                <input type="range" id="monthlyDebtRange" min="0" max="50000" value="0">
             </div>
-
-            <div class="input-card">
-                <div class="input-group">
-                    <label for="interestRate">% อัตราดอกเบี้ยเฉลี่ย 3 ปี <span class="info-icon" title="อัตราดอกเบี้ยโดยประมาณสำหรับ 3 ปีแรกของการกู้">?</span></label>
-                    <input type="number" id="interestRate" value="4.50" step="0.01" min="0" max="20">
-                    <span class="unit">%</span>
-                </div>
-                <div class="slider-group">
-                    <input type="range" id="interestRateSlider" min="0" max="20" step="0.01" value="4.50">
-                </div>
+            <div class="input-group">
+                <label for="age">อายุ (ปี)</label>
+                <input type="number" id="age" value="0" min="0" max="100">
+                <input type="range" id="ageRange" min="0" max="100" value="0">
             </div>
-
-            <!-- เพิ่มช่อง "ต้องผ่อนบ้านกี่ปี" -->
-            <div class="input-card">
-                <div class="input-group">
-                    <label for="loanTermYears">ต้องการกู้บ้านกี่ปี</label>
-                    <input type="number" id="loanTermYears" value="30" min="1" max="30">
-                    <span class="unit">ปี</span>
-                </div>
-                <div class="slider-group">
-                    <input type="range" id="loanTermYearsSlider" min="1" max="30" value="30">
-                </div>
+            <div class="input-group">
+                <label for="interestRate">% อัตราดอกเบี้ยเฉลี่ย 3 ปี</label>
+                <input type="text" id="interestRate" value="0.00%" step="0.01" min="0" max="20">
+                <input type="range" id="interestRateRange" min="0" max="20" step="0.01" value="0.00">
             </div>
-            
-            <div class="buttons">
-                <button class="reset-btn" onclick="resetForm()">ล้างข้อมูล</button>
-                <button class="calculate-btn" onclick="calculateLoan()">คำนวณ</button>
+            <div class="button-group">
+                <button id="clearBtn" class="secondary-button">ล้างข้อมูล</button>
+                <button id="calculateBtn" class="primary-button">คำนวณ</button>
             </div>
         </div>
 
-        <div class="output-section section-box">
-            <h2>ผลการคำนวณ <span class="info-icon" title="ผลลัพธ์นี้เป็นเพียงการประมาณการณ์เบื้องต้น กรุณาติดต่อธนาคารสำหรับข้อมูลที่ถูกต้อง">?</span></h2>
-            
-            <div class="result-box">
-                <div class="title">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-home"><path d="M3 9l9-7 9 7v11a2 0 0 1-2 2H5a2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
-                    ราคาสูงสุด 
+        <div class="card result-card">
+            <h2>ผลการคำนวณ <span class="help-icon">?</span></h2>
+            <div class="result-summary">
+                <div class="summary-item">
+                    <span class="icon-home"></span>
+                    <p>ราคาบ้านสูงสุด <br> <strong id="maxLoanPrice">0</strong> บาท</p>
                 </div>
-                <div class="value" id="maxLoanPrice">0</div>
-                <div class="sub-value">เงินดาวน์ <span id="downPayment">0 บาท</span></div>
-            </div>
-
-            <div class="summary-cards">
-                <div class="summary-card">
-                    <div class="value" id="loanLimit">0</div>
-                    <div class="label">วงเงินที่สามารถกู้ได้</div>
-                </div>
-                <div class="summary-card">
-                    <div class="value" id="monthlyPayment">0</div>
-                    <div class="label">ยอดผ่อนเฉลี่ยต่อเดือน 3 ปีแรก</div>
+                <div class="summary-item">
+                    <p>เงินดาวน์ <br> <strong>0</strong> บาท</p>
                 </div>
             </div>
-
-            <p class="disclaimer">
-                *ผลการคำนวณความสามารถในการกู้ เป็นเพียงการประมาณการเบื้องต้นจากข้อมูลที่ลูกค้ากรอกเท่านั้น ทั้งนี้ วงเงินที่ลูกค้าสามารถกู้ได้ และยอดผ่อนชำระต่อเดือนนั้น จะเป็นไปตามข้อกำหนดและเงื่อนไขในการพิจารณา
-            </p>
+            <div class="chart-container">
+                <div class="chart-item">
+                    <canvas id="loanAmountChart"></canvas>
+                    <div class="chart-label">
+                        <p>วงเงินที่สามารถกู้ได้</p>
+                        <strong id="loanAmount">0</strong> บาท
+                    </div>
+                </div>
+                <div class="chart-item">
+                    <canvas id="monthlyPaymentChart"></canvas>
+                    <div class="chart-label">
+                        <p>ยอดผ่อนเฉลี่ย<br>ต่อเดือน 3 ปีแรก</p>
+                        <strong id="monthlyPayment">0</strong> บาท
+                    </div>
+                </div>
+            </div>
+            <p class="disclaimer">*ผลการคำนวณสงวนสิทธิ์ในการกู้ เป็นเพียงการประมาณการเบื้องต้นจากข้อมูลที่ลูกค้ากรอกมาเท่านั้น ทั้งนี้ วงเงินที่ลูกค้าสามารถกู้ได้ และยอดผ่อนชำระต่อเดือนนั้น จะเป็นไปตามข้อกำหนดและเงื่อนไขที่ธนาคารกำหนด</p>
         </div>
     </div>
-    <a href="#" class="back-to-top" id="backToTopBtn">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
-        TOP
-    </a>
+    <div class="top-button" id="topBtn">&#8593; TOP</div>
 
-    <!-- เรียกใช้ไฟล์ JavaScript ของเรา -->
     <script src="script.js"></script>
 </body>
 </html>
