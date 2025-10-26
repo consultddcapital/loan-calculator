@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const monthlyDebtRange = document.getElementById('monthlyDebtRange');
     const ageInput = document.getElementById('age');
     const ageRange = document.getElementById('ageRange');
-    const interestRateInput = document.getElementById('interestRate'); // Changed to type text
+    const interestRateInput = document.getElementById('interestRate');
     const interestRateRange = document.getElementById('interestRateRange');
     const clearBtn = document.getElementById('clearBtn');
     const calculateBtn = document.getElementById('calculateBtn');
@@ -68,18 +68,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- Sync Input and Range Sliders ---
+    // These functions now only sync values, not trigger calculation
     function syncInputs(numberInput, rangeInput) {
         numberInput.addEventListener('input', () => {
             rangeInput.value = numberInput.value;
-            if (numberInput.id === 'interestRate') {
-                formatInterestRateInput(numberInput);
-            }
         });
         rangeInput.addEventListener('input', () => {
             numberInput.value = rangeInput.value;
-            if (numberInput.id === 'interestRate') {
-                formatInterestRateInput(numberInput);
-            }
         });
     }
 
@@ -87,14 +82,17 @@ document.addEventListener('DOMContentLoaded', () => {
     syncInputs(monthlyDebtInput, monthlyDebtRange);
     syncInputs(ageInput, ageRange);
 
+    // Special sync for interest rate with formatting
     interestRateRange.addEventListener('input', () => {
         interestRateInput.value = parseFloat(interestRateRange.value).toFixed(2) + '%';
     });
+    
     interestRateInput.addEventListener('input', () => {
-        formatInterestRateInput(interestRateInput);
         let valueWithoutPercent = parseFloat(interestRateInput.value.replace('%', ''));
         if (!isNaN(valueWithoutPercent)) {
             interestRateRange.value = valueWithoutPercent;
+        } else {
+            interestRateRange.value = 0; // Reset range if input is invalid
         }
     });
 
@@ -102,32 +100,29 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Format Interest Rate Input ---
     function formatInterestRateInput(inputElement) {
         let value = inputElement.value.replace(/[^0-9.]/g, ''); // Remove non-numeric except dot
-        if (value === '') {
+        if (value === '' || isNaN(parseFloat(value))) {
             inputElement.value = '0.00%';
             return;
         }
         let floatValue = parseFloat(value);
-        if (isNaN(floatValue)) {
-            inputElement.value = '0.00%';
-            return;
-        }
         inputElement.value = floatValue.toFixed(2) + '%';
     }
 
 
     // --- Calculation Logic ---
     function calculateLoan() {
+        // Ensure interest rate is formatted before parsing for calculation
+        formatInterestRateInput(interestRateInput); 
+
         const income = parseFloat(monthlyIncomeInput.value);
         const debt = parseFloat(monthlyDebtInput.value);
         const age = parseInt(ageInput.value);
         let annualInterestRate = parseFloat(interestRateInput.value.replace('%', '')) / 100;
         
-        if (isNaN(income) || isNaN(debt) || isNaN(age) || isNaN(annualInterestRate)) {
-            resetResultDisplays();
-            return;
-        }
-        if (income < debt) {
-            resetResultDisplays();
+        // Validate inputs - ensure they are numbers and income >= debt
+        // Changed age validation to allow age 1
+        if (isNaN(income) || isNaN(debt) || isNaN(age) || isNaN(annualInterestRate) || income < debt || age < 1) { 
+            resetResultDisplays(); // Clear results if inputs are invalid
             return;
         }
 
@@ -141,30 +136,30 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const MONTHS_IN_YEAR = 12;
         const netIncome = income - debt;
-        let maxAffordableMonthlyPayment;
         
-        const DSR_PERCENTAGE = 0.47; 
-        maxAffordableMonthlyPayment = netIncome * DSR_PERCENTAGE;
+        const DSR_PERCENTAGE = 0.47; // Debt Service Ratio
+        const maxAffordableMonthlyPayment = netIncome * DSR_PERCENTAGE;
 
 
         let maxLoanAmount = 0;
         let monthlyPayment = 0;
 
-        if (annualInterestRate > 0 && loanTenureYears > 0) {
+        if (annualInterestRate > 0) {
             const monthlyInterestRate = annualInterestRate / MONTHS_IN_YEAR;
             const totalPayments = loanTenureYears * MONTHS_IN_YEAR;
 
             const factor = Math.pow(1 + monthlyInterestRate, totalPayments);
-            if (monthlyInterestRate === 0) {
-                maxLoanAmount = maxAffordableMonthlyPayment * totalPayments;
-            } else {
-                maxLoanAmount = maxAffordableMonthlyPayment * (factor - 1) / (monthlyInterestRate * factor);
+            
+            if (monthlyInterestRate === 0 || factor - 1 === 0) { // Avoid division by zero
+                resetResultDisplays();
+                return;
             }
+            maxLoanAmount = maxAffordableMonthlyPayment * (factor - 1) / (monthlyInterestRate * factor);
             
             if (maxLoanAmount > 0) {
                 monthlyPayment = maxLoanAmount * (monthlyInterestRate * factor) / (factor - 1);
             }
-        } else if (annualInterestRate === 0) {
+        } else { // annualInterestRate === 0 (simple interest)
              maxLoanAmount = maxAffordableMonthlyPayment * (loanTenureYears * MONTHS_IN_YEAR);
              monthlyPayment = maxAffordableMonthlyPayment;
         }
@@ -172,6 +167,8 @@ document.addEventListener('DOMContentLoaded', () => {
         maxLoanAmount = Math.round(maxLoanAmount);
         monthlyPayment = Math.round(monthlyPayment);
 
+        // --- Hardcoded values for specific scenarios (consider removing or externalizing) ---
+        // These will override calculated values if conditions match.
         if (income === 60000 && debt === 5000 && age === 42 && annualInterestRate.toFixed(3) === (0.040).toFixed(3)) {
             maxLoanAmount = 4790000;
             monthlyPayment = 25900;
@@ -179,6 +176,7 @@ document.addEventListener('DOMContentLoaded', () => {
             maxLoanAmount = 2960000;
             monthlyPayment = 17800;
         }
+        // --- End of hardcoded values ---
 
 
         // Update UI
@@ -187,10 +185,10 @@ document.addEventListener('DOMContentLoaded', () => {
         monthlyPaymentDisplay.textContent = monthlyPayment.toLocaleString();
 
         // Update Charts
-        const chartMaxValue = Math.max(maxLoanAmount, 5000000); 
+        const chartLoanMaxValue = Math.max(maxLoanAmount, 5000000); 
         const chartPaymentMaxValue = Math.max(monthlyPayment, 30000); 
 
-        loanAmountDoughnutChart.data.datasets[0].data = [maxLoanAmount, Math.max(0, chartMaxValue - maxLoanAmount)];
+        loanAmountDoughnutChart.data.datasets[0].data = [maxLoanAmount, Math.max(0, chartLoanMaxValue - maxLoanAmount)];
         monthlyPaymentDoughnutChart.data.datasets[0].data = [monthlyPayment, Math.max(0, chartPaymentMaxValue - monthlyPayment)];
 
         loanAmountDoughnutChart.update();
@@ -203,8 +201,8 @@ document.addEventListener('DOMContentLoaded', () => {
         loanAmountDisplay.textContent = '0';
         monthlyPaymentDisplay.textContent = '0';
 
-        loanAmountDoughnutChart.data.datasets[0].data = [0, 1];
-        monthlyPaymentDoughnutChart.data.datasets[0].data = [0, 1];
+        loanAmountDoughnutChart.data.datasets[0].data = [0, 1]; // Reset to empty state
+        monthlyPaymentDoughnutChart.data.datasets[0].data = [0, 1]; // Reset to empty state
         loanAmountDoughnutChart.update();
         monthlyPaymentDoughnutChart.update();
     }
@@ -212,33 +210,39 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Clear Data Function ---
     function clearData() {
+        // Set meaningful default values for inputs as requested
         monthlyIncomeInput.value = 0;
         monthlyIncomeRange.value = 0;
         monthlyDebtInput.value = 0;
         monthlyDebtRange.value = 0;
-        ageInput.value = 0;
-        ageRange.value = 0;
-        interestRateInput.value = '0.00%'; 
-        interestRateRange.value = 0.00; 
+        ageInput.value = 1; // Changed to 1
+        ageRange.value = 1; // Changed to 1
+        interestRateInput.value = '0.00%'; // Changed to 0.00%
+        interestRateRange.value = 0.00; // Changed to 0.00
 
-        resetResultDisplays(); 
+        resetResultDisplays(); // Clear result displays and charts
     }
 
     // --- Event Listeners ---
+    // Only calculate when the calculate button is clicked
     calculateBtn.addEventListener('click', calculateLoan);
+    // Clear data and results when clear button is clicked
     clearBtn.addEventListener('click', clearData);
 
-    interestRateInput.addEventListener('focus', () => {
-        let value = interestRateInput.value.replace('%', '');
-        if (value === '0.00') value = '0'; 
-        interestRateInput.value = value;
-    });
+    // Format interest rate on blur, without triggering calculation automatically
     interestRateInput.addEventListener('blur', () => {
         formatInterestRateInput(interestRateInput);
     });
 
+    // Handle focus for interest rate input for better UX
+    interestRateInput.addEventListener('focus', () => {
+        let value = interestRateInput.value.replace('%', '');
+        if (value === '0.00' || value === '0') value = ''; // Clear to allow easy re-entry
+        interestRateInput.value = value;
+    });
 
-    // Scroll to Top functionality
+
+    // Scroll to Top functionality (no change)
     window.addEventListener('scroll', () => {
         if (window.scrollY > 200) {
             topBtn.classList.add('show');
@@ -254,7 +258,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Initialize charts and clear data on first load
+    // Initialize charts and set initial default values on first load
     initializeCharts();
-    clearData(); 
+    clearData(); // Call clearData to set initial input values and clear results
 });

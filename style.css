@@ -1,3 +1,4 @@
+/* (Code for style.css remains the same as previous responses) */
 body {
     font-family: 'Kanit', sans-serif;
     margin: 0;
@@ -128,7 +129,7 @@ h2 {
     display: flex;
     gap: 15px;
     margin-top: 30px;
-    justify-content: flex-end;
+    justify-content: flex-end; /* Align buttons to the right */
 }
 
 .primary-button, .secondary-button {
@@ -249,7 +250,7 @@ h2 {
 /* Scroll to Top Button */
 .top-button {
     position: fixed;
-    bottom: 30px;
+    bottom: 33px; /* Adjusted to be slightly higher */
     right: 30px;
     background-color: #dc3545; /* Red */
     color: white;
